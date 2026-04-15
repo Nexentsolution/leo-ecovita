@@ -133,13 +133,16 @@ async def leo(request: Request):
                 "Content-Type": "application/json"
             },
             json={
-                "model": "claude-haiku-4-5-20251001",
+                "model": "claude-haiku-4-5",
                 "max_tokens": 500,
                 "system": SYSTEM_PROMPT,
                 "messages": historial
             }
         )
-        respuesta = r.json()["content"][0]["text"]
+        data = r.json()
+        if "content" not in data:
+            return JSONResponse({"respuesta": "Hubo un error procesando tu mensaje. Intentá de nuevo."})
+        respuesta = data["content"][0]["text"]
 
     historial.append({"role": "assistant", "content": respuesta})
     await guardar_historial(contact_id, historial)
